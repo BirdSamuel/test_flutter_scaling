@@ -22,96 +22,102 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class MyHomePage extends StatefulWidget {
+class MyHomePage extends StatelessWidget {
   const MyHomePage({super.key, required this.title});
   final String title;
 
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  void initState() {
-    super.initState();
+  double _getRatio(orig, current) {
+    return ((current - orig) / orig) + 1;
   }
 
   @override
   Widget build(BuildContext context) {
     final mediaQueryData = MediaQuery.of(context);
-    final screenWidth = mediaQueryData.size.width;
-    final screenHeight = mediaQueryData.size.height;
     const figmaScreenWidth = 375;
     const figmaScreenHeight = 812;
-    final widthRatio =
-        ((screenWidth - figmaScreenWidth) / figmaScreenWidth) + 1;
-    final heightRatio =
-        ((screenHeight - figmaScreenHeight) / figmaScreenHeight) + 1;
-    final combinedScreenSize = screenWidth * screenHeight;
-    const combinedFigmaScreenSize = figmaScreenWidth * figmaScreenHeight;
-    final combinedRatio = ((combinedScreenSize - combinedFigmaScreenSize) /
-            combinedFigmaScreenSize) +
-        1;
+    final screenWidth = mediaQueryData.size.width;
+    final screenHeight = mediaQueryData.size.height;
+    final widthRatio = _getRatio(figmaScreenWidth, screenWidth);
+    final heightRatio = _getRatio(figmaScreenHeight, screenHeight);
+    final cScreenSize = screenWidth * screenHeight;
+    const cFigmaScreenSize = figmaScreenWidth * figmaScreenHeight;
+    final cRatio = _getRatio(cFigmaScreenSize, cScreenSize);
+
+    const testString =
+        "This is a somewhat long string. It should take up multiple lines and look similar on all screens, and line break similarly.";
+    const wideBoxWidth = 350.0;
+    const thinnerBoxWidth = 200.0;
+    const boxHeight = 60.0;
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text(title),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             const Text(
-                "Target Width: $figmaScreenWidth // Target Height: $figmaScreenHeight"),
-            Text("My Width: $screenWidth // My Height: $screenHeight"),
+                "Target Size: ${figmaScreenWidth}w x ${figmaScreenHeight}h"),
+            Text("My Size: ${screenWidth}w x ${screenHeight}h"),
             Text(
-                "widthRatio: ${widthRatio.toStringAsFixed(3)} // heightRatio: ${heightRatio.toStringAsFixed(3)}"),
-            Text("Combined Ratio: ${combinedRatio.toStringAsFixed(3)}"),
+                "widthRatio: ${widthRatio.toStringAsFixed(3)}w / heightRatio: ${heightRatio.toStringAsFixed(3)}"),
+            Text("Combined Ratio: ${cRatio.toStringAsFixed(3)}"),
             const Divider(),
-            const Text("With ratios (16 padding each side):"),
+            const Text(
+              "With widthRatio",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+              padding: EdgeInsets.symmetric(horizontal: 16 * widthRatio),
               child: Text(
-                "This is a somewhat long sentence. It will take up multiple lines.",
+                testString,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 23 * widthRatio),
+                style: TextStyle(fontSize: 18 * widthRatio),
               ),
             ),
-            const Text("Without ratios (16 padding each side):"),
+            const Text(
+              "Without widthRatios",
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
             const Padding(
               padding: EdgeInsets.symmetric(horizontal: 16),
               child: Text(
-                "This is a somewhat long sentence. It will take up multiple lines.",
+                testString,
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 23),
+                style: TextStyle(fontSize: 18),
               ),
             ),
             Container(
-              width: 350 * widthRatio,
-              height: 60 * heightRatio,
+              width: wideBoxWidth * widthRatio,
+              height: boxHeight * heightRatio,
               decoration: const BoxDecoration(color: Colors.red),
               child: const Center(
-                  child: Text("Width: 350\nwith widthRatio\nwith heightRatio")),
+                  child: Text(
+                      "Width: $wideBoxWidth\nwith widthRatio\nwith heightRatio")),
             ),
             Container(
-              width: 350,
-              height: 60,
+              width: wideBoxWidth,
+              height: boxHeight,
               decoration: const BoxDecoration(color: Colors.blue),
               child: const Center(
-                  child: Text("Width: 350\nno widthRatio\nno heightRatio")),
+                  child: Text(
+                      "Width: $wideBoxWidth\nno widthRatio\nno heightRatio")),
             ),
             Container(
-              width: 200 * widthRatio,
-              height: 60,
+              width: thinnerBoxWidth * widthRatio,
+              height: boxHeight,
               decoration: const BoxDecoration(color: Colors.orange),
-              child: const Center(child: Text("Width: 200\nwith widthRatio")),
+              child: const Center(
+                  child: Text("Width: $thinnerBoxWidth\nwith widthRatio")),
             ),
             Container(
-              width: 200,
-              height: 60,
+              width: thinnerBoxWidth,
+              height: boxHeight,
               decoration: const BoxDecoration(color: Colors.cyan),
-              child: const Center(child: Text("Width: 200\nno widthRatio")),
+              child: const Center(
+                  child: Text("Width: $thinnerBoxWidth\nno widthRatio")),
             ),
             Expanded(
               child: Container(
